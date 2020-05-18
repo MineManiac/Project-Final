@@ -13,7 +13,10 @@ FPS = 60
 
 
 # Definição de Tamanhos
-
+CORONAVIRUS_WIDTH = 
+CORONAVIRUS_HEIGHT = 
+CARDIB_WIDTH = 
+CARDIB_HEIGHT = 
 
 # Definição de Variáveis com cores básicas
 WHITE = (255, 255, 255)
