@@ -10,7 +10,7 @@ window = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption('CardiBee')
 
 # Grantindo FPS máximo de 30Hz:
-FPS = 30 
+FPS = 60 
 
 CORONAVIRUS_WIDTH = 50
 CORONAVIRUS_HEIGHT = 38
@@ -78,7 +78,7 @@ class Coronavirus (pygame.sprite.Sprite):
         if self.rect.top > HEIGHT or self.rect.right < 0 or self.rect.left > WIDTH:
             self.rect.x = random.randint(600, WIDTH +CORONAVIRUS_WIDTH)
             self.rect.y = random.randint(-CORONAVIRUS_HEIGHT, HEIGHT-CORONAVIRUS_HEIGHT)
-            self.speedx = random.randint(-9, -2)
+            self.speedx = random.randint(-6, -2)
             self.speedy = random.randint(-3,3)
 
 def game_screen (window):
