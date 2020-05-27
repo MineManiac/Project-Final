@@ -3,9 +3,9 @@ import pygame
 import random
 
 pygame.init()
-
+pygame.mixer.init()
 WIDTH = 600
-HEIGHT = 500
+HEIGHT = 600
 window = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption('CardiBee')
 
@@ -20,6 +20,7 @@ CARDIB_HEIGHT = 120
 def load_assets():
     assets = {}
     assets['background'] = pygame.image.load('Assets/Images/background.jpg').convert()
+    assets['background'] = pygame.transform.scale(assets['background'], (600,600))
     assets['coronavirus_img'] = pygame.image.load('Assets/Images/coronavirus.png').convert_alpha()
     assets['coronavirus_img'] = pygame.transform.scale(assets['coronavirus_img'], (CORONAVIRUS_WIDTH, CORONAVIRUS_HEIGHT))
     assets['cardib_img'] = pygame.image.load('Assets/Images/cardib.png').convert_alpha()
@@ -34,20 +35,25 @@ class Cardib (pygame.sprite.Sprite):
         self.image = assets['cardib_img']
         self.mask = pygame.mask.from_surface(self.image)
         self.rect = self.image.get_rect()
-        self.rect.centerx = WIDTH / 2
-        self.rect.bottom = HEIGHT - 10
+        self.rect.left = 10
+        self.rect.centery = HEIGHT/ 2
+        self.speedy = 0 
         self.speedx = 0
         self.groups = groups
         self.assets = assets
 
-    def update (self):
-        # Atualização da posição da personagem
+    def update(self):
+        # Atualização da posição da personagem:
+        self.rect.y += self.speedy 
         self.rect.x += self.speedx
-
-        # Mantem dentro da tela
-        if self.rect.right > WIDTH:
-            self.rect.right = WIDTH
-        if self.rect.left < 0:
+        # Mantendo a imagem dentro da tela:
+        if self.rect.bottom > HEIGHT:
+            self.rect.bottom = HEIGHT
+        if self.rect.top < 0:
+            self.rect.top = 0
+        if self.rect.right >= HEIGHT:
+            self.rect.right = HEIGHT
+        if self.rect.left <= 0 :
             self.rect.left = 0
 
 class Coronavirus (pygame.sprite.Sprite):
@@ -57,10 +63,12 @@ class Coronavirus (pygame.sprite.Sprite):
         self.image = assets['coronavirus_img']
         self.mask = pygame.mask.from_surface(self.image)
         self.rect = self.image.get_rect()
-        self.rect.x = random.randint(0, WIDTH-CORONAVIRUS_WIDTH)
-        self.rect.y = random.randint(-100, -CORONAVIRUS_HEIGHT)
-        self.speedx = random.randint(-3, 3)
-        self.speedy = random.randint(2, 9)
+        self.rect.x = random.randint(600, WIDTH +CORONAVIRUS_WIDTH)
+        self.rect.y = random.randint(-CORONAVIRUS_HEIGHT, HEIGHT-CORONAVIRUS_HEIGHT)
+        self.speedx = random.randint(2, 5)
+        self.speedy = random.randint(-4, 9)
+
+
 
     def update (self):
         # Atualizando a posição do vírus
@@ -68,10 +76,10 @@ class Coronavirus (pygame.sprite.Sprite):
         self.rect.y += self.speedy
 
         if self.rect.top > HEIGHT or self.rect.right < 0 or self.rect.left > WIDTH:
-            self.rect.x = random.randint(0, WIDTH-CORONAVIRUS_WIDTH)
-            self.rect.y = random.randint(-100, -CORONAVIRUS_HEIGHT)
-            self.speedx = random.randint(-3, 3)
-            self.speedy = random.randint(2, 9)
+            self.rect.x = random.randint(600, WIDTH +CORONAVIRUS_WIDTH)
+            self.rect.y = random.randint(-CORONAVIRUS_HEIGHT, HEIGHT-CORONAVIRUS_HEIGHT)
+            self.speedx = random.randint(-9, -2)
+            self.speedy = random.randint(-3,3)
 
 def game_screen (window):
     # Criando objeto para controle das atualizações:
@@ -117,17 +125,24 @@ def game_screen (window):
  
                 if event.type == pygame.KEYDOWN:
                 #keys_down[event.key] = True
-                    if event.key == pygame.K_LEFT:
-                        player.speedx -= 8
+                    if event.key == pygame.K_UP:
+                        player.speedy -= 8
+                    if event.key == pygame.K_DOWN:
+                        player.speedy += 8
                     if event.key == pygame.K_RIGHT:
-                        player.speedx += 8
-
+                        player.speedx += 8 
+                    if event.key == pygame.K_LEFT:
+                        player.speedx -=8
                 if event.type == pygame.KEYUP:
                     #if event.key in keys_down and keys_down[event.key]:
-                    if event.key == pygame.K_LEFT:
-                        player.speedx += 8
+                    if event.key == pygame.K_UP:
+                        player.speedy += 8
                     if event.key == pygame.K_RIGHT:
                         player.speedx -= 8
+                    if event.key == pygame.K_DOWN:
+                        player.speedy -= 8
+                    if event.key == pygame.K_LEFT:
+                        player.speedx += 8
 
         all_sprites.update()
 
