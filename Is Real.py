@@ -12,10 +12,10 @@ pygame.display.set_caption('CardiBee')
 # Grantindo FPS máximo de 30Hz:
 FPS = 60 
 
-CORONAVIRUS_WIDTH = 50
-CORONAVIRUS_HEIGHT = 38
-CARDIB_WIDTH = 100
-CARDIB_HEIGHT = 120
+CORONAVIRUS_WIDTH =  65
+CORONAVIRUS_HEIGHT = 50
+CARDIB_WIDTH = 98
+CARDIB_HEIGHT = 90
 
 def load_assets():
     assets = {}
