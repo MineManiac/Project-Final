@@ -1,6 +1,8 @@
 # Imporando as bibliotecas necessárias:
 import pygame
 import random
+import os
+from os import path
 
 pygame.init()
 pygame.mixer.init()
@@ -16,6 +18,12 @@ CORONAVIRUS_WIDTH =  65
 CORONAVIRUS_HEIGHT = 50
 CARDIB_WIDTH = 98
 CARDIB_HEIGHT = 90
+MASK_WIDTH = 65
+MASK_HEIGHT = 50
+HEART_WIDTH = 30
+HEART_HEIGHT = 50
+
+SOUND_DIR = path.join(path.dirname(__file__), 'Assets', 'Sounds')
 
 def load_assets():
     assets = {}
@@ -25,6 +33,17 @@ def load_assets():
     assets['coronavirus_img'] = pygame.transform.scale(assets['coronavirus_img'], (CORONAVIRUS_WIDTH, CORONAVIRUS_HEIGHT))
     assets['cardib_img'] = pygame.image.load('Assets/Images/cardib.png').convert_alpha()
     assets['cardib_img'] = pygame.transform.scale(assets['cardib_img'], (CARDIB_WIDTH, CARDIB_HEIGHT))
+    assets['heart_img'] = pygame.image.load('Assets/Images/Heart.png').convert_alpha()
+    assets['heart_img'] = pygame.transform.scale(assets['heart_img'], (HEART_WIDTH, HEART_HEIGHT))
+    assets['mask_img'] = pygame.image.load('Assets/Images/mask.png').convert_alpha()
+    assets['mask_img'] = pygame.transform.scale(assets['mask_img'], (MASK_WIDTH, MASK_HEIGHT))
+    
+    
+
+#Sons do jogo
+    pygame.mixer.music.load(os.path.join(SOUND_DIR, 'Main Song.wav'))
+    pygame.mixer.music.set_volume(0.4)
+    assets['CardiB'] = pygame.mixer.Sound(os.path.join(SOUND_DIR, 'CardiB.wav'))
 
     return assets
 
@@ -81,6 +100,13 @@ class Coronavirus (pygame.sprite.Sprite):
             self.speedx = random.randint(-6, -2)
             self.speedy = random.randint(-3,3)
 
+#class Mascara (pygame.sprite.Sprite):
+
+    #def __init__(self, assets):
+       # pygame.sprite.Sprite.__init__(self)
+        #self.image = assets[]
+
+
 def game_screen (window):
     # Criando objeto para controle das atualizações:
     clock = pygame.time.Clock() 
@@ -112,7 +138,9 @@ def game_screen (window):
     # keys_down = {}
     # score = 0
     # lives = 3
-
+    player_dead = False
+    #   ---Loop do jogo---
+    pygame.mixer.music.play(loops=-1)
     while state != END:
         clock.tick(FPS)
 
@@ -149,8 +177,16 @@ def game_screen (window):
         if state == PLAYING:
 
             hits = pygame.sprite.spritecollide(player, all_coronavirus, True, pygame.sprite.collide_mask)
+
             if len(hits) > 0:
-                state = END
+                timer = pygame.time.get_ticks()
+                assets['CardiB'].play()
+                player_dead = True
+
+            if player_dead == True:
+                NOW = pygame.time.get_ticks()
+                if NOW - timer > 2500:
+                    state = END
 
         window.fill((0, 0, 0)) 
         window.blit(assets['background'], (0, 0))
