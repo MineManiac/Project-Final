@@ -1,4 +1,4 @@
-# Imporando as bibliotecas necessárias:
+# Importando as bibliotecas necessárias:
 import pygame
 import random
 import os
@@ -6,7 +6,7 @@ from os import path
 
 pygame.init()
 pygame.mixer.init()
-WIDTH = 600
+WIDTH = 1000
 HEIGHT = 600
 window = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption('CardiBee')
@@ -28,7 +28,7 @@ SOUND_DIR = path.join(path.dirname(__file__), 'Assets', 'Sounds')
 def load_assets():
     assets = {}
     assets['background'] = pygame.image.load('Assets/Images/background.jpg').convert()
-    assets['background'] = pygame.transform.scale(assets['background'], (600,600))
+    assets['background'] = pygame.transform.scale(assets['background'], (WIDTH, HEIGHT))
     assets['coronavirus_img'] = pygame.image.load('Assets/Images/coronavirus.png').convert_alpha()
     assets['coronavirus_img'] = pygame.transform.scale(assets['coronavirus_img'], (CORONAVIRUS_WIDTH, CORONAVIRUS_HEIGHT))
     assets['cardib_img'] = pygame.image.load('Assets/Images/cardib.png').convert_alpha()
@@ -37,8 +37,7 @@ def load_assets():
     assets['heart_img'] = pygame.transform.scale(assets['heart_img'], (HEART_WIDTH, HEART_HEIGHT))
     assets['mask_img'] = pygame.image.load('Assets/Images/mask.png').convert_alpha()
     assets['mask_img'] = pygame.transform.scale(assets['mask_img'], (MASK_WIDTH, MASK_HEIGHT))
-    
-    
+       
 
 #Sons do jogo
     pygame.mixer.music.load(os.path.join(SOUND_DIR, 'Main Song.wav'))
@@ -61,7 +60,7 @@ class Cardib (pygame.sprite.Sprite):
         self.groups = groups
         self.assets = assets
 
-    def update(self):
+    def update (self):
         # Atualização da posição da personagem:
         self.rect.y += self.speedy 
         self.rect.x += self.speedx
@@ -82,12 +81,10 @@ class Coronavirus (pygame.sprite.Sprite):
         self.image = assets['coronavirus_img']
         self.mask = pygame.mask.from_surface(self.image)
         self.rect = self.image.get_rect()
-        self.rect.x = random.randint(600, WIDTH +CORONAVIRUS_WIDTH)
-        self.rect.y = random.randint(-CORONAVIRUS_HEIGHT, HEIGHT-CORONAVIRUS_HEIGHT)
+        self.rect.x = random.randint(WIDTH, WIDTH + CORONAVIRUS_WIDTH)
+        self.rect.y = random.randint(-CORONAVIRUS_HEIGHT, HEIGHT - CORONAVIRUS_HEIGHT)
         self.speedx = random.randint(2, 5)
         self.speedy = random.randint(-4, 9)
-
-
 
     def update (self):
         # Atualizando a posição do vírus
@@ -95,16 +92,33 @@ class Coronavirus (pygame.sprite.Sprite):
         self.rect.y += self.speedy
 
         if self.rect.top > HEIGHT or self.rect.right < 0 or self.rect.left > WIDTH:
-            self.rect.x = random.randint(600, WIDTH +CORONAVIRUS_WIDTH)
-            self.rect.y = random.randint(-CORONAVIRUS_HEIGHT, HEIGHT-CORONAVIRUS_HEIGHT)
+            self.rect.x = random.randint(WIDTH, WIDTH + CORONAVIRUS_WIDTH)
+            self.rect.y = random.randint(-CORONAVIRUS_HEIGHT, HEIGHT - CORONAVIRUS_HEIGHT)
             self.speedx = random.randint(-6, -2)
-            self.speedy = random.randint(-3,3)
+            self.speedy = random.randint(-3, 3)
 
-#class Mascara (pygame.sprite.Sprite):
+class Mask (pygame.sprite.Sprite):
 
-    #def __init__(self, assets):
-       # pygame.sprite.Sprite.__init__(self)
-        #self.image = assets[]
+    def __init__(self, assets):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = assets['mask_img']
+        self.mask = pygame.mask.from_surface(self.image)
+        self.rect = self.image.get_rect()
+        self.rect.x = random.randint(0, WIDTH/2)
+        self.rect.y = random.randint(0, HEIGHT)
+        self.speedx = 0
+        self.speedy = 0       
+
+#  def main_menu (screen):
+
+#     running = True
+#     clock = pygame.time.Clock()
+#     menu_background = pygame.
+
+#     while running:
+#         clock.tick(FPS)
+
+#         for event in pygame.event.get:
 
 
 def game_screen (window):
@@ -126,7 +140,7 @@ def game_screen (window):
     all_sprites.add(player)
 
     # Criando os vírus
-    for i in range(7):
+    for i in range(10):
         coronavirus = Coronavirus(assets)
         all_sprites.add(coronavirus)
         all_coronavirus.add(coronavirus)
@@ -135,12 +149,16 @@ def game_screen (window):
     PLAYING = 1
     state = PLAYING
 
-    # keys_down = {}
     # score = 0
     # lives = 3
     player_dead = False
     #   ---Loop do jogo---
     pygame.mixer.music.play(loops=-1)
+
+    time = pygame.time.get_ticks()
+
+    mask = None
+
     while state != END:
         clock.tick(FPS)
 
@@ -152,7 +170,6 @@ def game_screen (window):
             if state == PLAYING:
  
                 if event.type == pygame.KEYDOWN:
-                #keys_down[event.key] = True
                     if event.key == pygame.K_UP:
                         player.speedy -= 8
                     if event.key == pygame.K_DOWN:
@@ -161,8 +178,8 @@ def game_screen (window):
                         player.speedx += 8 
                     if event.key == pygame.K_LEFT:
                         player.speedx -=8
+
                 if event.type == pygame.KEYUP:
-                    #if event.key in keys_down and keys_down[event.key]:
                     if event.key == pygame.K_UP:
                         player.speedy += 8
                     if event.key == pygame.K_RIGHT:
@@ -172,11 +189,30 @@ def game_screen (window):
                     if event.key == pygame.K_LEFT:
                         player.speedx += 8
 
+        time2 = pygame.time.get_ticks()
+
+        if time2 - time > 5000:
+            if mask == None:
+                mask = Mask(assets)
+                all_sprites.add(mask)
+                time = pygame.time.get_ticks()
+                time2 = pygame.time.get_ticks()
+
         all_sprites.update()
 
         if state == PLAYING:
 
             hits = pygame.sprite.spritecollide(player, all_coronavirus, True, pygame.sprite.collide_mask)
+            
+            if mask != None:
+                hits2 = pygame.sprite.collide_rect(player, mask)
+                time3 = pygame.time.get_ticks()
+                # while time3 < 5000:
+                #     len(hits) = 0 
+
+            if mask != None and hits2 == True:
+                mask.kill()
+                mask = None
 
             if len(hits) > 0:
                 timer = pygame.time.get_ticks()
