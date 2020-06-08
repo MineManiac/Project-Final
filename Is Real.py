@@ -158,7 +158,8 @@ def game_screen (window):
     time = pygame.time.get_ticks()
 
     mask = None
-
+    contador = 0
+    counter_mask = 0
     while state != END:
         clock.tick(FPS)
 
@@ -204,6 +205,11 @@ def game_screen (window):
 
             hits = pygame.sprite.spritecollide(player, all_coronavirus, True, pygame.sprite.collide_mask)
             
+            invulnerable = True
+           # while counter_mask < 5 :
+            #    invulnerable = False
+             #   counter_mask =+ 1
+
             if mask != None:
                 hits2 = pygame.sprite.collide_rect(player, mask)
                 time3 = pygame.time.get_ticks()
@@ -213,11 +219,16 @@ def game_screen (window):
             if mask != None and hits2 == True:
                 mask.kill()
                 mask = None
-
-            if len(hits) > 0:
-                timer = pygame.time.get_ticks()
-                assets['CardiB'].play()
-                player_dead = True
+                counter_mask = 0
+            if invulnerable:
+                if len(hits) > 0:
+                    contador+=1
+                    if contador == 1 :
+                        assets['CardiB'].play()
+                    timer = pygame.time.get_ticks()
+                    player_dead = True
+                    player.kill()
+                
 
             if player_dead == True:
                 NOW = pygame.time.get_ticks()
