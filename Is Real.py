@@ -18,12 +18,13 @@ CORONAVIRUS_WIDTH =  65
 CORONAVIRUS_HEIGHT = 50
 CARDIB_WIDTH = 98
 CARDIB_HEIGHT = 90
-MASK_WIDTH = 65
-MASK_HEIGHT = 50
+MASK_WIDTH = 70
+MASK_HEIGHT = 40
 HEART_WIDTH = 30
 HEART_HEIGHT = 50
 
 SOUND_DIR = path.join(path.dirname(__file__), 'Assets', 'Sounds')
+
 
 def load_assets():
     assets = {}
@@ -37,6 +38,9 @@ def load_assets():
     assets['heart_img'] = pygame.transform.scale(assets['heart_img'], (HEART_WIDTH, HEART_HEIGHT))
     assets['mask_img'] = pygame.image.load('Assets/Images/mask.png').convert_alpha()
     assets['mask_img'] = pygame.transform.scale(assets['mask_img'], (MASK_WIDTH, MASK_HEIGHT))
+    assets['endgame'] = pygame.image.load('Assets/Images/endgame.jpg').convert()
+    assets['endgame'] = pygame.transform.scale(assets['endgame'], (WIDTH, HEIGHT))
+    assets["Arial"] = pygame.font.Font('assets/font/Arial.ttf', 28)
        
 
 #Sons do jogo
@@ -140,7 +144,7 @@ def game_screen (window):
     all_sprites.add(player)
 
     # Criando os vírus
-    for i in range(10):
+    for i in range(15):
         coronavirus = Coronavirus(assets)
         all_sprites.add(coronavirus)
         all_coronavirus.add(coronavirus)
@@ -149,7 +153,7 @@ def game_screen (window):
     PLAYING = 1
     state = PLAYING
 
-    # score = 0
+    
     # lives = 3
     player_dead = False
     #   ---Loop do jogo---
@@ -158,8 +162,10 @@ def game_screen (window):
     time = pygame.time.get_ticks()
 
     mask = None
+    score = 0
     contador = 0
-    counter_mask = 0
+    endgame = False
+
     while state != END:
         clock.tick(FPS)
 
@@ -180,6 +186,8 @@ def game_screen (window):
                     if event.key == pygame.K_LEFT:
                         player.speedx -=8
 
+                        
+
                 if event.type == pygame.KEYUP:
                     if event.key == pygame.K_UP:
                         player.speedy += 8
@@ -190,14 +198,18 @@ def game_screen (window):
                     if event.key == pygame.K_LEFT:
                         player.speedx += 8
 
+
         time2 = pygame.time.get_ticks()
+
+        text_surface = assets['Arial'].render("{:08d}".format(score), True, (255, 255, 0))
+        text_rect = text_surface.get_rect()
+        text_rect.midtop = (WIDTH / 2,  10)
+        window.blit(text_surface, text_rect)
 
         if time2 - time > 5000:
             if mask == None:
                 mask = Mask(assets)
                 all_sprites.add(mask)
-                time = pygame.time.get_ticks()
-                time2 = pygame.time.get_ticks()
 
         all_sprites.update()
 
@@ -205,40 +217,51 @@ def game_screen (window):
 
             hits = pygame.sprite.spritecollide(player, all_coronavirus, True, pygame.sprite.collide_mask)
             
-            invulnerable = True
-           # while counter_mask < 5 :
-            #    invulnerable = False
-             #   counter_mask =+ 1
 
             if mask != None:
                 hits2 = pygame.sprite.collide_rect(player, mask)
-                time3 = pygame.time.get_ticks()
-                # while time3 < 5000:
-                #     len(hits) = 0 
+
+
 
             if mask != None and hits2 == True:
                 mask.kill()
                 mask = None
-                counter_mask = 0
-            if invulnerable:
-                if len(hits) > 0:
-                    contador+=1
-                    if contador == 1 :
-                        assets['CardiB'].play()
-                    timer = pygame.time.get_ticks()
-                    player_dead = True
-                    player.kill()
-                
+                score+=1
+                print(score)
 
-            if player_dead == True:
-                NOW = pygame.time.get_ticks()
-                if NOW - timer > 2500:
+                
+            if len(hits) > 0:
+                contador+=1
+                if contador == 1 :
+                    assets['CardiB'].play()
+                timer = pygame.time.get_ticks()
+                player_dead = True
+                player.kill()
+                endgame = True
+        
+        if endgame == False:
+            window.fill((0, 0, 0)) 
+            window.blit(assets['background'], (0, 0))
+            all_sprites.draw(window)
+            pygame.display.update()
+
+
+        if endgame:
+            window.fill((0, 0, 0)) 
+            window.blit(assets['endgame'], (0, 0))
+            pygame.display.update()
+            pygame.mixer.music.pause()
+            state = 2
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE:
                     state = END
 
-        window.fill((0, 0, 0)) 
-        window.blit(assets['background'], (0, 0))
-        all_sprites.draw(window)
-        pygame.display.update()
+        # text_surface = assets['Arial'].render("{:08d}".format(score), True, (255, 255, 0))
+        # text_rect = text_surface.get_rect()
+        # text_rect.midtop = (WIDTH / 2,  10)
+        # window.blit(text_surface, text_rect)
+
+
 
 game_screen(window)
 
