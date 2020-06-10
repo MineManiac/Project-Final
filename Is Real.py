@@ -40,7 +40,7 @@ def load_assets():
     assets['mask_img'] = pygame.transform.scale(assets['mask_img'], (MASK_WIDTH, MASK_HEIGHT))
     assets['endgame'] = pygame.image.load('Assets/Images/endgame.jpg').convert()
     assets['endgame'] = pygame.transform.scale(assets['endgame'], (WIDTH, HEIGHT))
-    assets["Arial"] = pygame.font.Font('assets/font/Arial.ttf', 28)
+    assets["Arial"] = pygame.font.Font('assets/font/Arial.ttf', 36)
        
 
 #Sons do jogo
@@ -58,7 +58,7 @@ class Cardib (pygame.sprite.Sprite):
         self.mask = pygame.mask.from_surface(self.image)
         self.rect = self.image.get_rect()
         self.rect.left = 10
-        self.rect.centery = HEIGHT/ 2
+        self.rect.centery = HEIGHT/2
         self.speedy = 0 
         self.speedx = 0
         self.groups = groups
@@ -73,8 +73,8 @@ class Cardib (pygame.sprite.Sprite):
             self.rect.bottom = HEIGHT
         if self.rect.top < 0:
             self.rect.top = 0
-        if self.rect.right >= HEIGHT:
-            self.rect.right = HEIGHT
+        if self.rect.right >= WIDTH:
+            self.rect.right = WIDTH
         if self.rect.left <= 0 :
             self.rect.left = 0
 
@@ -108,8 +108,8 @@ class Mask (pygame.sprite.Sprite):
         self.image = assets['mask_img']
         self.mask = pygame.mask.from_surface(self.image)
         self.rect = self.image.get_rect()
-        self.rect.x = random.randint(0, WIDTH/2)
-        self.rect.y = random.randint(0, HEIGHT)
+        self.rect.x = random.randint(0, WIDTH)
+        self.rect.y = random.randint(-MASK_HEIGHT, HEIGHT - MASK_HEIGHT)
         self.speedx = 0
         self.speedy = 0       
 
@@ -201,12 +201,8 @@ def game_screen (window):
 
         time2 = pygame.time.get_ticks()
 
-        text_surface = assets['Arial'].render("{:08d}".format(score), True, (255, 255, 0))
-        text_rect = text_surface.get_rect()
-        text_rect.midtop = (WIDTH / 2,  10)
-        window.blit(text_surface, text_rect)
 
-        if time2 - time > 5000:
+        if time2 - time >7000:
             if mask == None:
                 mask = Mask(assets)
                 all_sprites.add(mask)
@@ -239,9 +235,14 @@ def game_screen (window):
                 player.kill()
                 endgame = True
         
+
         if endgame == False:
             window.fill((0, 0, 0)) 
             window.blit(assets['background'], (0, 0))
+            text_surface = assets['Arial'].render("{:03d}".format(score), True, (255, 255, 0))
+            text_rect = text_surface.get_rect()
+            text_rect.midtop = (WIDTH / 2,  10)
+            window.blit(text_surface, text_rect)
             all_sprites.draw(window)
             pygame.display.update()
 
@@ -255,11 +256,6 @@ def game_screen (window):
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
                     state = END
-
-        # text_surface = assets['Arial'].render("{:08d}".format(score), True, (255, 255, 0))
-        # text_rect = text_surface.get_rect()
-        # text_rect.midtop = (WIDTH / 2,  10)
-        # window.blit(text_surface, text_rect)
 
 
 
