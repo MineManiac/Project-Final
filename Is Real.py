@@ -27,14 +27,14 @@ SOUND_DIR = path.join(path.dirname(__file__), 'Assets', 'Sounds')
 
 def load_assets():
     assets = {}
+    assets['main_background'] = pygame.image.load('Assets/Images/main_background.jpg').convert()
+    assets['main_background'] = pygame.transform.scale(assets['main_background'], (WIDTH, HEIGHT))
     assets['background'] = pygame.image.load('Assets/Images/background.jpg').convert()
     assets['background'] = pygame.transform.scale(assets['background'], (WIDTH, HEIGHT))
     assets['coronavirus_img'] = pygame.image.load('Assets/Images/coronavirus.png').convert_alpha()
     assets['coronavirus_img'] = pygame.transform.scale(assets['coronavirus_img'], (CORONAVIRUS_WIDTH, CORONAVIRUS_HEIGHT))
     assets['cardib_img'] = pygame.image.load('Assets/Images/cardib.png').convert_alpha()
     assets['cardib_img'] = pygame.transform.scale(assets['cardib_img'], (CARDIB_WIDTH, CARDIB_HEIGHT))
-    assets['heart_img'] = pygame.image.load('Assets/Images/Heart.png').convert_alpha()
-    assets['heart_img'] = pygame.transform.scale(assets['heart_img'], (HEART_WIDTH, HEART_HEIGHT))
     assets['mask_img'] = pygame.image.load('Assets/Images/mask.png').convert_alpha()
     assets['mask_img'] = pygame.transform.scale(assets['mask_img'], (MASK_WIDTH, MASK_HEIGHT))
     assets['endgame'] = pygame.image.load('Assets/Images/endgame.jpg').convert()
@@ -112,17 +112,33 @@ class Mask (pygame.sprite.Sprite):
         self.speedx = 0
         self.speedy = 0       
 
-#  def main_menu (screen):
+def main_menu (window):
 
-#     running = True
-#     clock = pygame.time.Clock()
-#     menu_background = pygame.
+    assets = load_assets()
 
-#     while running:
-#         clock.tick(FPS)
+    menu = True
+    clock = pygame.time.Clock()
+    
+    while menu:
 
-#         for event in pygame.event.get:
+        clock.tick(FPS)
+        #main_background_rect = main_background.get_rect()
 
+        for event in pygame.event.get:
+
+            if event.type == pygame.K_SPACE:
+                game_on = False
+                menu = False
+
+            if even.type == pygame.KEYUP:
+                game_on = True
+                menu = False
+
+    window.fill((0, 0, 0))   
+    window.blit(assets['main_background'], (0, 0))
+
+    return game_on   
+        
 
 def game_screen (window):
     # Criando objeto para controle das atualizações:
@@ -151,11 +167,9 @@ def game_screen (window):
     END = 0
     PLAYING = 1
     state = PLAYING
-
     
-    # lives = 3
     player_dead = False
-    #   ---Loop do jogo---
+    # ---Loop do jogo---
     pygame.mixer.music.play(loops=-1)
 
     time = pygame.time.get_ticks()
@@ -185,8 +199,6 @@ def game_screen (window):
                     if event.key == pygame.K_LEFT:
                         player.speedx -=8
 
-                        
-
                 if event.type == pygame.KEYUP:
                     if event.key == pygame.K_UP:
                         player.speedy += 8
@@ -201,7 +213,7 @@ def game_screen (window):
         time2 = pygame.time.get_ticks()
 
 
-        if time2 - time >7000:
+        if time2 - time > 7000:
             if mask == None:
                 mask = Mask(assets)
                 all_sprites.add(mask)
@@ -210,21 +222,16 @@ def game_screen (window):
 
         if state == PLAYING:
 
-            hits = pygame.sprite.spritecollide(player, all_coronavirus, True, pygame.sprite.collide_mask)
-            
+            hits = pygame.sprite.spritecollide(player, all_coronavirus, True, pygame.sprite.collide_mask)           
 
             if mask != None:
                 hits2 = pygame.sprite.collide_rect(player, mask)
-
-
 
             if mask != None and hits2 == True:
                 mask.kill()
                 mask = None
                 score+=1
-                print(score)
-
-                
+               
             if len(hits) > 0:
                 contador+=1
                 if contador == 1 :
@@ -256,8 +263,8 @@ def game_screen (window):
                 if event.key == pygame.K_SPACE:
                     state = END
 
-
-
-game_screen(window)
+start_game = main_menu(window)
+if start_game == True:
+    game_screen(window)
 
 pygame.quit() 
