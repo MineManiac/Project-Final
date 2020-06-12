@@ -114,7 +114,9 @@ class Mask (pygame.sprite.Sprite):
 
 def main_menu (window):
 
-    assets = load_assets()
+    # assets = load_assets()
+    main_background = pygame.image.load('Assets/Images/main_background.jpg').convert()
+    main_background = pygame.transform.scale(main_background, (WIDTH, HEIGHT))
 
     menu = True
     clock = pygame.time.Clock()
@@ -122,21 +124,23 @@ def main_menu (window):
     while menu:
 
         clock.tick(FPS)
-        #main_background_rect = main_background.get_rect()
 
-        for event in pygame.event.get:
+        for event in pygame.event.get():
 
-            if event.type == pygame.K_SPACE:
-                game_on = False
-                menu = False
+            if event.type == pygame.KEYDOWN:
 
-            if even.type == pygame.KEYUP:
-                game_on = True
-                menu = False
+                if event.key == pygame.K_SPACE:
+                    game_on = True
+                    menu = False
 
-    window.fill((0, 0, 0))   
-    window.blit(assets['main_background'], (0, 0))
+                if event.key == pygame.K_ESCAPE:
+                    game_on = False
+                    menu = False
 
+        window.fill((255, 0, 0))   
+        window.blit(main_background, (0, 0))
+        pygame.display.update()
+        
     return game_on   
         
 
@@ -212,7 +216,6 @@ def game_screen (window):
 
         time2 = pygame.time.get_ticks()
 
-
         if time2 - time > 7000:
             if mask == None:
                 mask = Mask(assets)
@@ -233,7 +236,7 @@ def game_screen (window):
                 score+=1
                
             if len(hits) > 0:
-                contador+=1
+                contador += 1
                 if contador == 1 :
                     assets['CardiB'].play()
                 timer = pygame.time.get_ticks()
@@ -256,11 +259,15 @@ def game_screen (window):
         if endgame:
             window.fill((0, 0, 0)) 
             window.blit(assets['endgame'], (0, 0))
+            text_surface = assets['Arial'].render("{:03d}".format(score), True, (0     , 0, 0))
+            text_rect = text_surface.get_rect()
+            text_rect.midtop = (WIDTH / 1.8,  HEIGHT / 3.1)
+            window.blit(text_surface, text_rect)
             pygame.display.update()
             pygame.mixer.music.pause()
             state = 2
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_SPACE:
+                if event.key == pygame.K_ESCAPE:
                     state = END
 
 start_game = main_menu(window)
