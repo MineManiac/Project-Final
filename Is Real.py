@@ -9,7 +9,6 @@ pygame.mixer.init()
 WIDTH = 1000
 HEIGHT = 600
 window = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption('CardiBee')
 
 # Grantindo FPS máximo de 30Hz:
 FPS = 60 
