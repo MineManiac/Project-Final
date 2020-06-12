@@ -10,7 +10,7 @@ WIDTH = 1000
 HEIGHT = 600
 window = pygame.display.set_mode((WIDTH, HEIGHT))
 
-# Grantindo FPS máximo de 30Hz:
+# Grantindo FPS máximo de 60Hz:
 FPS = 60 
 
 CORONAVIRUS_WIDTH =  65
@@ -255,7 +255,7 @@ def game_screen (window):
             all_sprites.draw(window)
             pygame.display.update()
 
-
+        # Finaliza o jogo quando o usuário perde e o manda para a Endscreen:
         if endgame:
             window.fill((0, 0, 0)) 
             window.blit(assets['endgame'], (0, 0))
@@ -266,12 +266,16 @@ def game_screen (window):
             pygame.display.update()
             pygame.mixer.music.pause()
             state = 2
+
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     state = END
 
 start_game = main_menu(window)
+
+# Começa o jogo se o jogador apertar a tecla de espaço
 if start_game == True:
     game_screen(window)
 
+# Finaliza o Pygame:
 pygame.quit() 
